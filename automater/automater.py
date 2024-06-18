@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     # contact name is You by default
     # will send a message to yourself
-    contact-name = "You"
+    contact_name = "You"
 
     # activating the socket connection 
     address = ('localhost', 6000)
@@ -69,10 +69,10 @@ if __name__ == "__main__":
         else:
             # CTRL + ALT + N
             actions.key_down(Keys.CONTROL).key_down(Keys.ALT).send_keys('n').key_up(Keys.ALT).key_up(Keys.CONTROL).perform()
-            actions.send_keys(contact-name)
+            actions.send_keys(contact_name)
             body = driver.find_element(By.TAG_NAME, 'body')
             # TODO: add error checking here
-            if ( not body.find("No results found")):
+            if ( not body.text.find("No results found")):
                 actions.send_keys(Keys.ENTER).perform()
                 actions.send_keys(message)
                 actions.send_keys(Keys.ENTER).perform()
