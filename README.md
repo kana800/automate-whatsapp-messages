@@ -1,6 +1,6 @@
 <h3 align="center">automate-whatsapp-messages</h3>
 
-this is currently built only to _send_ whatsapp messages;
+> this is currently built only to _send_ whatsapp messages;
 
 The project is using `selenium` to navigate through the [web.whatsapp.com](https://web.whatsapp.com/), with the help [keyboard shortcuts](https://faq.whatsapp.com/6204576529560565/?cms_platform=web) _automater_ can easily navigate through the whatsapp website.
 
@@ -14,3 +14,4 @@ listed below are the steps that needs to be taken to _send a message_:
 3. type the message
 4. press `ENTER`
 5. close chat : `ESC`
+
