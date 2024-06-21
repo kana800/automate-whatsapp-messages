@@ -16,10 +16,31 @@ from selenium.webdriver.common.by import By
 
 from multiprocessing.connection import Listener
 
+# contact name is You by default
+# will send a message to yourself
+contact_name = "You"
+
+def getmessageinformation(msg):
+    """
+    summary: separates the message
+    and the sender and return in a 
+    tuple
+    """
+    msg = msg.lstrip().rstrip()
+    if msg[:4] != "send":
+        print("send keyword isn't found\nusage: send <message> to:<name>")
+        return (None, "You")
+    content = msg[4:].lstrip().rstrip()
+    to_index = content.rfind("to:") 
+    if to_index == -1:
+        print("to keyword isn't found\nusage: send <message> to:<name>")
+        return (None, "You")
+    contact_name = content[to_index:].split('to:')[1].lstrip().rstrip()
+    return (content[:to_index].rstrip(), contact_name)
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-activeserver", type=bool, default=False, help="run automater till you close the server")
     parser.add_argument("-headless", type=bool, default=False, help="run automator headless")
     args = parser.parse_args()
 
@@ -36,12 +57,10 @@ if __name__ == "__main__":
     driver.get("https://web.whatsapp.com/")
     WebDriverWait(driver, 5200)
 
-    # contact name is You by default
-    # will send a message to yourself
-    contact_name = "You"
 
     # activating the socket connection 
     address = ('localhost', 6000)
+    # add the secret key
     listener = Listener(address, authkey=b'secretkey')
     conn = listener.accept()
 
@@ -62,23 +81,25 @@ if __name__ == "__main__":
             break
         # TODO: add client feedback here; send message back
         # sending the message failed
-        if (not msg.find("send") and 
-            (not msg.find("name")) and (not msg.find("msg"))):
-            raise Exception("send name:<name> msg:<message>")
-            continue
-        else:
+        (message, contact_name) = getmessageinformation(msg)
+        print(f"contact name: {contact_name} | message: {message}")
+        if message and contact_name:
             # CTRL + ALT + N
             actions.key_down(Keys.CONTROL).key_down(Keys.ALT).send_keys('n').key_up(Keys.ALT).key_up(Keys.CONTROL).perform()
-            actions.send_keys(contact_name)
+            actions.send_keys(contact_name).perform()
             body = driver.find_element(By.TAG_NAME, 'body')
             # TODO: add error checking here
-            if ( not body.text.find("No results found")):
+            if (body.text.find("No results found")) == -1:
                 actions.send_keys(Keys.ENTER).perform()
                 actions.send_keys(message)
                 actions.send_keys(Keys.ENTER).perform()
-                actions.send_keys(Keys.ESCAPE)
+                actions.send_keys(Keys.ESCAPE).perform()
             else:
-                raise Exception("contact name cannot be found")
+                print("contact name cannot be found")
+                actions.send_keys(Keys.ESCAPE).perform()
                 continue
+        else:
+            print("request cannot be processed")
+            continue
     listener.close()
     driver.quit()
