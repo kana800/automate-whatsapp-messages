@@ -34,7 +34,7 @@ if __name__ == "__main__":
     options = FirefoxOptions()
     if args.headless: 
         options.add_argument("--headless")
-    firefoxprofile = webdriver.FirefoxProfile("/mnt/c/Users/kable/AppData/Roaming/Mozilla/Firefox/Profiles/vsi7dd0h.wa")
+    firefoxprofile = webdriver.FirefoxProfile()
     options.profile = firefoxprofile 
     driver = webdriver.Firefox(options=options)
     driver.get("https://web.whatsapp.com/")
