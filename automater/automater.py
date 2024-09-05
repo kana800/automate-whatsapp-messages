@@ -5,6 +5,7 @@ whatsapp
 import time
 import sys
 import argparse
+import re
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -37,6 +38,7 @@ def getmessageinformation(msg):
         print("to keyword isn't found\nusage: send <message> to:<name>")
         return (None, "You")
     contact_name = content[to_index:].split('to:')[1].lstrip().rstrip()
+    _content = re.split('\n',content[:to_index].rstrip())
     return (content[:to_index].rstrip(), contact_name)
 
 if __name__ == "__main__":
@@ -91,7 +93,9 @@ if __name__ == "__main__":
             # TODO: add error checking here
             if (body.text.find("No results found")) == -1:
                 actions.send_keys(Keys.ENTER).perform()
-                actions.send_keys(message)
+                for _message in message:
+                    actions.send_keys(_message)
+                    actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).perform()
                 actions.send_keys(Keys.ENTER).perform()
                 actions.send_keys(Keys.ESCAPE).perform()
             else:
