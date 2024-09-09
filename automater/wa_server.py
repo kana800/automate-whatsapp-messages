@@ -1,6 +1,8 @@
 """
 commandline application that send messages through
-whatsapp 
+whatsapp;automator act as a 'server' running on 
+the background and will use sockets to communicate
+between processes.
 """
 import time
 import sys
@@ -79,6 +81,8 @@ if __name__ == "__main__":
         # format: send-message <contact-name> <message>
         msg = conn.recv()
         if msg == 'close':
+            conn.close()
+        if msg == 'quit':
             conn.close()
             break
         # TODO: add client feedback here; send message back

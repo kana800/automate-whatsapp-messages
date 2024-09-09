@@ -7,6 +7,6 @@ if __name__ == "__main__":
     while True:
         raw_input = input("type message: ")
         conn.send(raw_input)
-        if raw_input == "close":
+        if raw_input == "quit":
             break
     conn.close()

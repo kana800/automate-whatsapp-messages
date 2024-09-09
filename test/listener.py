@@ -26,6 +26,8 @@ if __name__ == "__main__":
         msg = conn.recv()
         if msg == 'close':
             conn.close()
+        elif msg == 'quit':
+            conn.close()
             break
         (message, username) = getmessageinformation(msg)
         print(f"user: {username} message: {message}")
