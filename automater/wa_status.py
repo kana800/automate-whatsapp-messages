@@ -1,5 +1,6 @@
 """
-change the status of your whatsapp account
+small script to change the status 
+of your whatsapp account
 """
 import argparse
 from sys import exit
@@ -58,6 +59,6 @@ if __name__ == "__main__":
         actions.send_keys(message).perform()
         actions.send_keys(Keys.ENTER).perform()
         actions.send_keys(Keys.ESCAPE).perform()
-    except:
-        print("Cannot Find The Edit Icon")
+    except Exception as e:
+        print("Cannot Find The Edit Icon", file=sys.stderr)
     driver.quit()
