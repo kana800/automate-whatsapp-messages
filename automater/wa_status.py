@@ -18,7 +18,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="db_status.log", encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename="db_wa_status.log", encoding='utf-8', level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 if __name__ == "__main__":
