@@ -1,13 +1,20 @@
 """
 change the status of your whatsapp account
 usage:
-    wa_status.py "<status>" <head>
+    wa_status.py "<status>"
+example:
+    wa_status.py "Sleeping"
+    wa_status.py "Working"
+tip: 
+    setup with automated task to change the status
+    automatically on different times;
 """
 import argparse
 from sys import exit
 from env import FFPROFILEPATHW, FFPROFILEPATHL
-import logging
-import os
+from time import sleep
+from os import name as osname
+from logging import getLogger
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -17,7 +24,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 logging.basicConfig(filename="db_wa_status.log", encoding='utf-8', level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -34,7 +41,7 @@ if __name__ == "__main__":
         logger.error("status '%s' is logger than 139 characters", message)
         exit(-1)
 
-    FFPROFILEPATH = FFPROFILEPATHW if os.name == "nt" else FFPROFILEPATHL
+    FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
 
     # check the docs on how to bypass the whatsapp web login everytime
     # 1. create a new firefox profile; search -> about:profile
@@ -70,7 +77,9 @@ if __name__ == "__main__":
         actions.send_keys(message).perform()
         actions.send_keys(Keys.ENTER).perform()
         actions.send_keys(Keys.ESCAPE).perform()
+        sleep(20)
     except Exception as e:
         logger.error("Driver Cannot Find The 'EDIT' icon")
     logger.debug('[quit]')
+    sleep(20)
     driver.quit()

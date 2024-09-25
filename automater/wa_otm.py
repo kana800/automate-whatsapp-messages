@@ -1,5 +1,10 @@
 """
 send one-time message through whatsapp
+usage:
+    wa_otm.py <recepient> <medium> <content>
+example:
+    wa_otm.py "You" "file" "content.txt"
+    wa_otm.py "You" "message" "hi!!"
 """
 import argparse
 import re
