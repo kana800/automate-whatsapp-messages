@@ -1,7 +1,7 @@
 # add the status and the time here
 $statusList = @{
     "10:00" = "Working"
-    "23:00" = "Sleeping"
+    "22:39" = "Sleeping"
 }
 
 $pythonScriptPath = Resolve-Path -Path "G:\repositories\automate-whatsapp-messages\automater\wa_status.py"

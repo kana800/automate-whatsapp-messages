@@ -2,7 +2,7 @@
 
 > silly project that is currently built only to _send_ whatsapp messages;
 
-The project is using `selenium` to navigate through the [web.whatsapp.com](https://web.whatsapp.com/), with the help [keyboard shortcuts](https://faq.whatsapp.com/6204576529560565/?cms_platform=web) _automater_ can easily navigate through the whatsapp website.
+The project is using `selenium` to navigate through the [web.whatsapp.com](https://web.whatsapp.com/). With the help [keyboard shortcuts](https://faq.whatsapp.com/6204576529560565/?cms_platform=web) _automater_ can easily navigate through the whatsapp website.
 
 #### Basic Setup
 
@@ -14,6 +14,8 @@ you need to follow the steps listed below before running a script
 FFPROFILEW=r"<path-to-firefox-profile-in-windows>"
 FFPROFILEL=r"<path-to-firefox-profile-in-linux>"
 ```
+
+
 #### Map Of Content
 
 - [wa_status](automater/wa_status.py) : edit whatsapp status

@@ -10,10 +10,11 @@ import argparse
 import re
 import logging
 
-from os.path import dirname, exists
+from os.path import exists
 from os import name as osname
 from codecs import decode
 from sys import exit
+import time
 
 from env import FFPROFILEPATHW, FFPROFILEPATHL
 
@@ -97,12 +98,12 @@ if __name__ == "__main__":
         actions.send_keys(Keys.ESCAPE).perform()
         # sleeping isn't recommended; doing this 
         # till i whatsapp send the message
-        sleep(20)
+        time.sleep(20)
     else:
         print("contact name cannot be found")
         actions.send_keys(Keys.ESCAPE).perform()
     logger.debug('[end]')
     # sleeping isn't recommended; doing this 
     # till i whatsapp send the message
-    sleep(20)
+    time.sleep(20)
     driver.quit()
