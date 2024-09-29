@@ -71,39 +71,39 @@ if __name__ == "__main__":
     parser.add_argument("content", type=str, help="if message; type message or else enter filepath")
     args = parser.parse_args()
 
-#    filename = args.content
-#    if (path.exists(filename)):
-#        with open(filename, 'r') as f:
-#            content = json.load(f)
-#    else:
-#        logger.info("cannot file: %s", filename)
-#        sys.exit(-1)
-#
-#    # check the docs on how to bypass the whatsapp web login everytime
-#    # 1. create a new firefox profile; search -> about:profile
-#    # 2. go to whatsapp and login 
-#    # 3. enter the path
-#    options = FirefoxOptions()
-#    options.add_argument("--headless")
-#    FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
-#
-#    firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
-#    options.profile = firefoxprofile 
-#    driver = webdriver.Firefox(options=options)
-#    driver.get("https://web.whatsapp.com/")
-#    wait = WebDriverWait(driver, 5200)
-#    wait.until(EC.visibility_of_element_located((
-#        By.XPATH,"/html/body/div[1]/div/div/div[2]/div[3]/header/header/div/div[1]/h1")))
-#    # waiting till the whatsapp is properly
-#    # loaded all its content in the webbrowser
-#    time.sleep(10)
-#    for to,messagelist in content.items():
-#        for message in messagelist:
-#            logger.info("sending %s to %s",  message, to)
-#            sendMessage(driver, to, message)
-#
-#    # sleeping isn't recommended; doing this 
-#    # till i whatsapp send the message
-#    time.sleep(20)
-#    logger.info('[end]')
-#    driver.quit()
+    filename = args.content
+    if (path.exists(filename)):
+        with open(filename, 'r') as f:
+            content = json.load(f)
+    else:
+        logger.info("cannot file: %s", filename)
+        sys.exit(-1)
+
+    # check the docs on how to bypass the whatsapp web login everytime
+    # 1. create a new firefox profile; search -> about:profile
+    # 2. go to whatsapp and login 
+    # 3. enter the path
+    options = FirefoxOptions()
+    options.add_argument("--headless")
+    FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
+
+    firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
+    options.profile = firefoxprofile 
+    driver = webdriver.Firefox(options=options)
+    driver.get("https://web.whatsapp.com/")
+    wait = WebDriverWait(driver, 5200)
+    wait.until(EC.visibility_of_element_located((
+        By.XPATH,"/html/body/div[1]/div/div/div[2]/div[3]/header/header/div/div[1]/h1")))
+    # waiting till the whatsapp is properly
+    # loaded all its content in the webbrowser
+    time.sleep(10)
+    for to,messagelist in content.items():
+        for message in messagelist:
+            logger.info("sending %s to %s",  message, to)
+            sendMessage(driver, to, message)
+
+    # sleeping isn't recommended; doing this 
+    # till i whatsapp send the message
+    time.sleep(20)
+    logger.info('[end]')
+    driver.quit()
