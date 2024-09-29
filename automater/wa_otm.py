@@ -82,7 +82,6 @@ if __name__ == "__main__":
     # 6. type the message
     # 7. press ENTER
     # 8. press ESC
-    # generate a alert via javascript 
     actions = ActionChains(driver)
     # CTRL + ALT + N
     actions.key_down(Keys.CONTROL).key_down(Keys.ALT).send_keys('n').key_up(Keys.ALT).key_up(Keys.CONTROL).perform()
