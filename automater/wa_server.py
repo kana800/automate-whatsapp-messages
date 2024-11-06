@@ -5,6 +5,7 @@ through sockets and execute them;
 """
 import argparse
 import logging
+import re
 
 from os import path
 from os import name as osname
@@ -13,7 +14,9 @@ import sys
 import json
 import time
 
-from env import FFPROFILEPATHW, FFPROFILEPATHL, LOGPATH, SECRETKEY
+from env import FFPROFILEPATHW, FFPROFILEPATHL, LOGPATH
+
+from codecs import decode
 
 import socket
 import threading
@@ -35,9 +38,9 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 
 msgqueue = queue.Queue()
 IsRunning = True
-WAactions = ['OTM','BLK','STA']
+WAactions = ['OTM', 'BLK','STA']
 
-def sendMessage(driver:webdriver, to:str, message:str):
+def sendMessage(driver:webdriver, to:str, message:list):
     actions = ActionChains(driver)
     # CTRL + ALT + N
     actions.key_down(Keys.CONTROL).key_down(Keys.ALT).send_keys('n').key_up(Keys.ALT).key_up(Keys.CONTROL).perform()
@@ -46,8 +49,9 @@ def sendMessage(driver:webdriver, to:str, message:str):
     # TODO: add error checking here
     if (body.text.find("No results found")) == -1:
         actions.send_keys(Keys.ENTER).perform()
-        actions.send_keys(message)
-        actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
+        for _message in message:
+            actions.send_keys(_message)
+            actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
         actions.send_keys(Keys.ENTER).perform()
         actions.send_keys(Keys.ESCAPE).perform()
         # waiting until whatsapp send the message
@@ -57,14 +61,17 @@ def sendMessage(driver:webdriver, to:str, message:str):
         logger.debug("contact name %s cannot be found", to)
         actions.send_keys(Keys.ESCAPE).perform()
 
-def decodeMessage(msg):
+
+def decodeMessage(driver, msg):
     """
     summary: decode the message 
     sent by the client
     FORMAT: <WAACTIONSTYPE> to:<TO> msg:<MESSAGE>
     WAACTIONTYPES
     - OTM
-        Example: OTM to:You msg:test message
+        FORMAT: OTM to:You msg:test message
+    - OTP TODO: remove OTP
+        FORMAT: OTP to:You msg:very long message here
     - BULK
         FORMAT: BLK to:You msg:<filepath>
     - STATUS
@@ -83,11 +90,10 @@ def decodeMessage(msg):
         logger.info("Wrong message format")
         return -1
     to = message[to_idx + 3:msg_idx].rstrip()
-    content = message[msg_idx + 3:].lstrip()
+    content = message[msg_idx + 4:].lstrip()
+    content_list = re.split("\n", decode(content, 'unicode_escape'))
     if actiontype == "OTM":
-        sendMessage(to, content)
-    
-        
+        sendMessage(driver, to, content_list)
 
 
 if __name__ == "__main__":
@@ -98,17 +104,17 @@ if __name__ == "__main__":
     # 2. go to whatsapp and login 
     # 3. enter the path
     options = FirefoxOptions()
-    #options.add_argument("--headless")
+    options.add_argument("--headless")
     FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
 
     firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
     options.profile = firefoxprofile 
     driver = webdriver.Firefox(options=options)
     driver.get("https://web.whatsapp.com/")
-    wait = WebDriverWait(driver, 5200)
+    wait = WebDriverWait(driver, 100)
+    time.sleep(200)
     # waiting till the whatsapp is properly
     # loaded all its content in the webbrowser
-    #time.sleep(5000)
     address = ('localhost', 8000)
     try:
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -136,9 +142,7 @@ if __name__ == "__main__":
                     client_socket.close()
                     break
                 else:
-                    decodeMessage(request)
-                    response = "accepted".encode("utf-8")
-                    client_socket.send(response)
+                    decodeMessage(driver, request)
     except Exception as e:
         print(f"[MainLoop] Exception: {e}")
         logger.error(f"[MainLoop] Exception: {e}")

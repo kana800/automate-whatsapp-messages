@@ -14,9 +14,3 @@ you need to follow the steps listed below before running a script
 FFPROFILEW=r"<path-to-firefox-profile-in-windows>"
 FFPROFILEL=r"<path-to-firefox-profile-in-linux>"
 ```
-
-
-#### Map Of Content
-
-- [wa_status](automater/wa_status.py) : edit whatsapp status
-- [wa_otm](automater/wa_otm.py) : send onetime message
