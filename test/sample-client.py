@@ -9,13 +9,8 @@ if __name__ == "__main__":
         msg = input("Enter message: ")
         client.send(msg.encode("utf-8")[:1024])
 
-        response = client.recv(1024)
-        response = response.decode("utf-8")
-
-        if response.lower() == "closed":
+        if msg.lower() == "close":
             break
-
-        print(f"Received: {response}")
 
     client.close()
     print("Connection to server closed")

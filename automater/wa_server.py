@@ -47,6 +47,8 @@ def sendMessage(driver:webdriver, to:str, message:list):
     actions.send_keys(to).perform()
     body = driver.find_element(By.TAG_NAME, 'body')
     # TODO: add error checking here
+    print(f"sending message to:{to}...")
+    logger.info(f"sending message to:{to}")
     if (body.text.find("No results found")) == -1:
         actions.send_keys(Keys.ENTER).perform()
         for _message in message:
@@ -104,12 +106,13 @@ if __name__ == "__main__":
     # 2. go to whatsapp and login 
     # 3. enter the path
     options = FirefoxOptions()
-    options.add_argument("--headless")
+#    options.add_argument("--headless")
     FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
 
     firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
     options.profile = firefoxprofile 
-    driver = webdriver.Firefox(options=options)
+    service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
+    driver = webdriver.Firefox(service=service, options=options)
     driver.get("https://web.whatsapp.com/")
     wait = WebDriverWait(driver, 100)
     time.sleep(200)
@@ -120,12 +123,12 @@ if __name__ == "__main__":
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(address)
         server.listen(0)
-        print(f"listening on {address[0]}:{address[1]}")
+        print(f"listening ({address[0]}:{address[1]})") 
         IsConnected = False
         while True:
             if IsConnected == False:
                 client_socket, client_address = server.accept()
-                print(f"connection accepted {client_address[0]}:{client_address[1]}")
+                logger.info(f"connection accepted {client_address[0]}:{client_address[1]}")
                 IsConnected = True
 
             if IsConnected:
@@ -133,12 +136,14 @@ if __name__ == "__main__":
                 print(f"({client_address[0]}:{client_address[1]}) -> {request}") 
 
                 if request.lower() == "close":
-                    client_socket.send("closed".encode("utf-8"))
+#                    client_socket.send("closed".encode("utf-8"))
                     IsConnected = False
+                    logger.info(f"connection closed {client_address[0]}:{client_address[1]}")
                     client_socket.close()
                 elif request.lower() == "quit":
-                    client_socket.send("closed".encode("utf-8"))
+#                    client_socket.send("closed".encode("utf-8"))
                     IsConnected = False
+                    logger.info(f"connection quit {client_address[0]}:{client_address[1]}")
                     client_socket.close()
                     break
                 else:
