@@ -14,7 +14,7 @@ import sys
 import json
 import time
 
-from env import FFPROFILEPATHW, FFPROFILEPATHL, LOGPATH
+from env import FFPROFILEPATHL, LOGPATH
 
 from codecs import decode
 
@@ -47,8 +47,7 @@ def sendMessage(driver:webdriver, to:str, message:list):
     actions.send_keys(to).perform()
     body = driver.find_element(By.TAG_NAME, 'body')
     # TODO: add error checking here
-    print(f"sending message to:{to}...")
-    logger.info(f"sending message to:{to}")
+    #logger.info(f"sending message to:{to}")
     if (body.text.find("No results found")) == -1:
         actions.send_keys(Keys.ENTER).perform()
         for _message in message:
@@ -107,9 +106,7 @@ if __name__ == "__main__":
     # 3. enter the path
     options = FirefoxOptions()
 #    options.add_argument("--headless")
-    FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
-
-    firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
+    firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATHL)
     options.profile = firefoxprofile 
     service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
     driver = webdriver.Firefox(service=service, options=options)
@@ -123,7 +120,6 @@ if __name__ == "__main__":
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(address)
         server.listen(0)
-        print(f"listening ({address[0]}:{address[1]})") 
         IsConnected = False
         while True:
             if IsConnected == False:
@@ -133,8 +129,6 @@ if __name__ == "__main__":
 
             if IsConnected:
                 request = client_socket.recv(1024).decode("utf-8")
-                print(f"({client_address[0]}:{client_address[1]}) -> {request}") 
-
                 if request.lower() == "close":
 #                    client_socket.send("closed".encode("utf-8"))
                     IsConnected = False
@@ -149,8 +143,7 @@ if __name__ == "__main__":
                 else:
                     decodeMessage(driver, request)
     except Exception as e:
-        print(f"[MainLoop] Exception: {e}")
-        logger.error(f"[MainLoop] Exception: {e}")
+        print("exception is {e}")
     finally:
         server.close()
     logger.info("[end]")
