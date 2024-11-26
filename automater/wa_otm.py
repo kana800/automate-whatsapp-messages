@@ -28,7 +28,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="db_wa_otm.log", encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename="db_wa_otm.log", encoding='utf-8', level=logging.ERROR)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 # contact name is You by default
@@ -62,15 +62,29 @@ if __name__ == "__main__":
     # 2. go to whatsapp and login 
     # 3. enter the path
     options = FirefoxOptions()
-    options.add_argument("--headless")
+#   options.add_argument("--headless")
     FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
-    print(FFPROFILEPATH)
     firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
     options.profile = firefoxprofile 
     service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
     driver = webdriver.Firefox(service=service, options=options)
     driver.get("https://web.whatsapp.com/")
-#    wait = WebDriverWait(driver, 5200)
+    wait = WebDriverWait(driver, 180)
+    try:
+        wait.until(
+                EC.invisibility_of_element_located((By.ID, "wa_web_initial_startup"))
+        )
+        print("waited 1")
+        wait.until(
+            EC.presence_of_element_located((By.ID, "app"))
+        )
+        print("waited 2")
+        # checking if we need to login to the system
+        loginpage = re.search(r"Log into WhatsApp Web", driver.page_source)
+        assert loginpage == True
+    except Exception as e:
+        print("Login In Error: please Log In and run the program")
+        logger.error("Error: Login Page (%s)", e);
 #    wait.until(EC.visibility_of_element_located((
 #        By.XPATH,"/html/body/div[1]/div/div/div[2]/div[3]/header/header/div/div[1]/h1")))
 #    message = re.split("\n", decode(message, 'unicode_escape'))
@@ -107,4 +121,4 @@ if __name__ == "__main__":
 #    # till i whatsapp send the message
 #    time.sleep(20)
     input()
-    driver.quit()
+#    driver.quit()
