@@ -35,6 +35,29 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 # will send a message to yourself
 contact_name = "You"
 
+def sendMessage(driver:webdriver, to:str, message:list):
+    actions = ActionChains(driver)
+    # CTRL + ALT + N
+    actions.key_down(Keys.CONTROL).key_down(Keys.ALT).send_keys('n').key_up(Keys.ALT).key_up(Keys.CONTROL).perform()
+    actions.send_keys(to).perform()
+    body = driver.find_element(By.TAG_NAME, 'body')
+    # TODO: add error checking here
+    #logger.info(f"sending message to:{to}")
+    if (body.text.find("No results found")) == -1:
+        actions.send_keys(Keys.ENTER).perform()
+        for _message in message:
+            actions.send_keys(_message)
+            actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
+        actions.send_keys(Keys.ENTER).perform()
+        actions.send_keys(Keys.ESCAPE).perform()
+        # waiting until whatsapp send the message
+        # to its server;
+        time.sleep(20)
+    else:
+        logger.debug("contact name %s cannot be found", to)
+        actions.send_keys(Keys.ESCAPE).perform()
+
+
 if __name__ == "__main__":
 
     logger.debug('[start]')
@@ -62,63 +85,33 @@ if __name__ == "__main__":
     # 2. go to whatsapp and login 
     # 3. enter the path
     options = FirefoxOptions()
-#   options.add_argument("--headless")
+    options.add_argument("--headless")
     FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
     firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
     options.profile = firefoxprofile 
-    service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
-    driver = webdriver.Firefox(service=service, options=options)
+    if osname == 'posix':
+        service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
+        driver = webdriver.Firefox(service=service, options=options)
+    else:
+        driver = webdriver.Firefox(options=options)
     driver.get("https://web.whatsapp.com/")
     wait = WebDriverWait(driver, 180)
     try:
         wait.until(
                 EC.invisibility_of_element_located((By.ID, "wa_web_initial_startup"))
         )
-        print("waited 1")
         wait.until(
             EC.presence_of_element_located((By.ID, "app"))
         )
-        print("waited 2")
+        # waiting until 1 minute to load up everything 
+        # before doing any checks
+        time.sleep(60)
         # checking if we need to login to the system
         loginpage = re.search(r"Log into WhatsApp Web", driver.page_source)
-        assert loginpage == True
+        if not loginpage:
+            message = re.split("\n", decode(message, 'unicode_escape'))
+            sendMessage(driver, contact_name, message)
     except Exception as e:
         print("Login In Error: please Log In and run the program")
-        logger.error("Error: Login Page (%s)", e);
-#    wait.until(EC.visibility_of_element_located((
-#        By.XPATH,"/html/body/div[1]/div/div/div[2]/div[3]/header/header/div/div[1]/h1")))
-#    message = re.split("\n", decode(message, 'unicode_escape'))
-#    logger.debug("sending %s to %s", message, contact_name)
-#    # everything from this point onwards is the
-#    # clicking and typing;
-#    # 1. create a new chat by typing CTRL+ALT+N 
-#    # 2. type the contact name
-#    # 3. press ENTER
-#    # 6. type the message
-#    # 7. press ENTER
-#    # 8. press ESC
-#    actions = ActionChains(driver)
-#    # CTRL + ALT + N
-#    actions.key_down(Keys.CONTROL).key_down(Keys.ALT).send_keys('n').key_up(Keys.ALT).key_up(Keys.CONTROL).perform()
-#    actions.send_keys(contact_name).perform()
-#    body = driver.find_element(By.TAG_NAME, 'body')
-#    # TODO: add error checking here
-#    if (body.text.find("No results found")) == -1:
-#        actions.send_keys(Keys.ENTER).perform()
-#        for _message in message:
-#            actions.send_keys(_message)
-#            actions.key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
-#        actions.send_keys(Keys.ENTER).perform()
-#        actions.send_keys(Keys.ESCAPE).perform()
-#        # sleeping isn't recommended; doing this 
-#        # till i whatsapp send the message
-#        time.sleep(20)
-#    else:
-#        print("contact name cannot be found")
-#        actions.send_keys(Keys.ESCAPE).perform()
-#    logger.debug('[end]')
-#    # sleeping isn't recommended; doing this 
-#    # till i whatsapp send the message
-#    time.sleep(20)
-    input()
-#    driver.quit()
+        logger.error("Error: Login Page (%s)", e)
+    driver.quit()

@@ -38,7 +38,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 
 msgqueue = queue.Queue()
 IsRunning = True
-WAactions = ['OTM', 'BLK','STA']
+WAactions = ['OTM','BLK','STA']
 
 def sendMessage(driver:webdriver, to:str, message:list):
     actions = ActionChains(driver)
@@ -61,7 +61,6 @@ def sendMessage(driver:webdriver, to:str, message:list):
     else:
         logger.debug("contact name %s cannot be found", to)
         actions.send_keys(Keys.ESCAPE).perform()
-
 
 def decodeMessage(driver, msg):
     """
@@ -105,7 +104,7 @@ if __name__ == "__main__":
     # 2. go to whatsapp and login 
     # 3. enter the path
     options = FirefoxOptions()
-#    options.add_argument("--headless")
+    options.add_argument("--headless")
     firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATHL)
     options.profile = firefoxprofile 
     service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
