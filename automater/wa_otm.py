@@ -16,7 +16,7 @@ from codecs import decode
 from sys import exit
 import time
 
-from env import FFPROFILEPATHW, FFPROFILEPATHL
+from env import PROFILES
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -63,6 +63,7 @@ if __name__ == "__main__":
     logger.debug('[start]')
 
     parser = argparse.ArgumentParser(description="send a whatsapp message")
+    parser.add_argument("profile", type=str, help="profile type (saved in env)")
     parser.add_argument("recepient", type=str, help="recepient of the message")
     parser.add_argument("medium", type=str, choices=["message","file"], help="what type of content; either direct message or a file")
     parser.add_argument("content", type=str, help="if message; type message or else enter filepath")
@@ -80,14 +81,17 @@ if __name__ == "__main__":
         logger.debug("%s doesn't exist; exiting program", args.content)
         exit(-1)
 
+    if args.profile not in PROFILES:
+        logger.debug("%s profile doesnt exist", args.profile)
+        exit(-1)
+
     # check the docs on how to bypass the whatsapp web login everytime
     # 1. create a new firefox profile; search -> about:profile
     # 2. go to whatsapp and login 
     # 3. enter the path
     options = FirefoxOptions()
     options.add_argument("--headless")
-    FFPROFILEPATH = FFPROFILEPATHW if osname == "nt" else FFPROFILEPATHL
-    firefoxprofile = webdriver.FirefoxProfile(FFPROFILEPATH)
+    firefoxprofile = webdriver.FirefoxProfile(PROFILES[args.profile])
     options.profile = firefoxprofile 
     if osname == 'posix':
         service = webdriver.FirefoxService(executable_path='/usr/local/bin/geckodriver')
@@ -111,7 +115,8 @@ if __name__ == "__main__":
         if not loginpage:
             message = re.split("\n", decode(message, 'unicode_escape'))
             sendMessage(driver, contact_name, message)
+        else:
+            print("Login In Error: please Log In and run the program")
     except Exception as e:
-        print("Login In Error: please Log In and run the program")
         logger.error("Error: Login Page (%s)", e)
     driver.quit()
